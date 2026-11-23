@@ -12,6 +12,17 @@ import { useCalendarStore } from '@/store/calendarStore';
 import { WEEK_STARTS_ON, WEEKDAY_LABELS } from './constants';
 import { MonthDayCell, buildMonthCells } from './MonthDayCell';
 
+/** Mỗi thứ một màu kẹo */
+const WEEKDAY_COLORS = [
+  'linear-gradient(135deg,#60a5fa,#818cf8)',
+  'linear-gradient(135deg,#34d399,#2dd4bf)',
+  'linear-gradient(135deg,#fbbf24,#fb923c)',
+  'linear-gradient(135deg,#a78bfa,#c084fc)',
+  'linear-gradient(135deg,#22d3ee,#38bdf8)',
+  'linear-gradient(135deg,#f472b6,#fb7185)',
+  'linear-gradient(135deg,#f43f5e,#ec4899)',
+];
+
 interface MonthViewProps {
   onEventClick: (eventId: string, occurrenceStart?: Date) => void;
   onDayClick: (date: Date) => void;
@@ -57,15 +68,13 @@ export function MonthView({ onEventClick, onDayClick, onEventMove }: MonthViewPr
         role="grid"
         aria-label="Lịch tháng"
       >
-        <div
-          className="grid grid-cols-7 border-b border-border bg-muted/40 dark:bg-muted/20"
-          role="row"
-        >
-          {WEEKDAY_LABELS.map((label) => (
+        <div className="grid grid-cols-7 gap-1.5 px-1.5 pt-1.5 sm:gap-2 sm:px-2 sm:pt-2" role="row">
+          {WEEKDAY_LABELS.map((label, i) => (
             <div
               key={label}
               role="columnheader"
-              className="py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+              className="gloss rounded-xl py-1.5 text-center font-fun text-xs font-extrabold text-white shadow-[0_3px_0_rgb(0_0_0/0.12)]"
+              style={{ background: WEEKDAY_COLORS[i] }}
             >
               {label}
             </div>
@@ -73,8 +82,8 @@ export function MonthView({ onEventClick, onDayClick, onEventMove }: MonthViewPr
         </div>
 
         <div
-          className="grid flex-1 auto-rows-fr grid-cols-7 min-h-0"
-          style={{ gridTemplateRows: `repeat(${rowCount}, minmax(108px, 1fr))` }}
+          className="grid min-h-0 flex-1 auto-rows-fr grid-cols-7 gap-1.5 overflow-y-auto p-1.5 sm:gap-2 sm:p-2"
+          style={{ gridTemplateRows: `repeat(${rowCount}, minmax(100px, 1fr))` }}
           role="rowgroup"
         >
           {monthCellData.map((cell) => (

@@ -67,10 +67,8 @@ export function CalendarTools() {
   };
 
   return (
-    <div>
-      <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-        Tiện ích
-      </h3>
+    <div className="clay rounded-3xl p-3">
+      <h3 className="mb-2 font-fun text-sm font-extrabold text-foreground">🧁 Tiện ích</h3>
       <div className="space-y-2 px-2">
         <div className="flex items-center justify-between">
           <Label htmlFor="tool-lunar" className="cursor-pointer text-xs font-medium">

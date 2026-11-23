@@ -72,19 +72,20 @@ function SidebarContent({ collapsed }: { collapsed?: boolean }) {
     <>
       {/* Logo */}
       <div className={cn('flex shrink-0 items-center gap-2', collapsed && 'justify-center')}>
-        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-primary to-indigo-600 text-sm font-black text-primary-foreground shadow-sm sm:h-9 sm:w-9">
-          📅
+        <div className="gloss flex h-11 w-11 animate-floaty items-center justify-center rounded-2xl bg-gradient-to-br from-pink-400 via-fuchsia-400 to-violet-500 text-2xl shadow-[0_6px_0_rgb(162_28_175),0_12px_20px_-6px_rgb(217_70_239/0.6)]">
+          🗓️
         </div>
         {!collapsed && (
-          <span className="font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
-            MyCalendar
-          </span>
+          <div className="leading-none">
+            <span className="candy-text font-fun text-2xl font-extrabold">MyCalendar</span>
+            <span className="block text-[11px] font-semibold text-muted-foreground">lịch xinh của bạn ✨</span>
+          </div>
         )}
       </div>
 
       {!collapsed && (
         <Button
-          className="w-full shadow-md bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/95 hover:to-indigo-600/95 font-bold text-white transition-transform hover:scale-[1.02]"
+          className="w-full rounded-2xl font-fun text-lg"
           size="lg"
           onClick={() => openEventModal()}
         >
@@ -97,7 +98,7 @@ function SidebarContent({ collapsed }: { collapsed?: boolean }) {
       {collapsed ? (
         <Button
           size="icon"
-          className="mx-auto h-12 w-12 rounded-full shadow-lg bg-primary"
+          className="mx-auto h-12 w-12 rounded-full"
           onClick={() => openEventModal()}
           title="Tạo sự kiện"
         >
@@ -106,7 +107,7 @@ function SidebarContent({ collapsed }: { collapsed?: boolean }) {
       ) : (
         <>
           {/* Mini calendar */}
-          <div>
+          <div className="clay rounded-3xl p-3">
             <div className="mb-2 flex items-center justify-between">
               <Button
                 variant="ghost"
@@ -116,8 +117,8 @@ function SidebarContent({ collapsed }: { collapsed?: boolean }) {
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <span className="text-xs font-bold uppercase tracking-wider text-foreground">
-                {format(miniMonth, 'MMM yyyy', { locale: vi })}
+              <span className="font-fun text-sm font-extrabold capitalize text-foreground">
+                {format(miniMonth, 'MMMM yyyy', { locale: vi })}
               </span>
               <Button
                 variant="ghost"
@@ -144,21 +145,21 @@ function SidebarContent({ collapsed }: { collapsed?: boolean }) {
                     type="button"
                     onClick={() => setCurrentDate(day)}
                     className={cn(
-                      'relative flex aspect-square items-center justify-center rounded-full text-xs transition-all',
-                      !isSameMonth(day, miniMonth) && 'text-muted-foreground/50',
+                      'relative flex aspect-square items-center justify-center rounded-xl text-xs font-semibold transition-all',
+                      !isSameMonth(day, miniMonth) && 'text-muted-foreground/40',
                       isToday(day) &&
-                        'bg-primary font-bold text-primary-foreground shadow-xs',
+                        'candy-btn font-extrabold !shadow-[0_3px_0_rgb(190_24_120)]',
                       isSameDay(day, currentDate) &&
                         !isToday(day) &&
-                        'bg-accent font-semibold text-accent-foreground',
+                        'bg-accent font-bold text-accent-foreground ring-2 ring-pink-300',
                       !isToday(day) &&
                         !isSameDay(day, currentDate) &&
-                        'hover:bg-muted'
+                        'hover:scale-110 hover:bg-pink-100 dark:hover:bg-pink-500/20'
                     )}
                   >
                     {format(day, 'd')}
                     {hasEv && !isToday(day) && (
-                      <span className="absolute bottom-0.5 h-1 w-1 rounded-full bg-primary" />
+                      <span className="absolute bottom-0.5 h-1 w-1 rounded-full bg-gradient-to-r from-pink-500 to-violet-500" />
                     )}
                   </button>
                 );
@@ -169,15 +170,15 @@ function SidebarContent({ collapsed }: { collapsed?: boolean }) {
           <OnThisDayCard />
 
           {/* Calendars */}
-          <div>
-            <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              Lịch của tôi
+          <div className="clay rounded-3xl p-3">
+            <h3 className="mb-2 font-fun text-sm font-extrabold text-foreground">
+              🎨 Lịch của tôi
             </h3>
             <div className="space-y-0.5">
               {calendars.map((cal) => (
                 <div
                   key={cal.id}
-                  className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-muted/60 transition-colors"
+                  className="flex items-center gap-2 rounded-xl px-2 py-1.5 transition-all hover:translate-x-0.5 hover:bg-muted/70"
                 >
                   <Checkbox
                     id={`sb-${cal.id}`}
@@ -185,7 +186,7 @@ function SidebarContent({ collapsed }: { collapsed?: boolean }) {
                     onCheckedChange={(v) => toggleVisibility(cal.id, !!v)}
                   />
                   <span
-                    className="h-3 w-3 shrink-0 rounded-full"
+                    className="gloss h-4 w-4 shrink-0 rounded-md shadow-[0_2px_0_rgb(0_0_0/0.15)]"
                     style={{ background: cal.color }}
                   />
                   <Label
@@ -328,7 +329,7 @@ export function Sidebar() {
       {/* Desktop */}
       <aside
         className={cn(
-          'hidden lg:flex shrink-0 flex-col gap-4 border-r bg-background overflow-y-auto transition-all duration-300',
+          'glass hidden lg:flex shrink-0 flex-col gap-4 rounded-3xl overflow-y-auto transition-all duration-300',
           collapsed ? 'w-[72px] px-2 py-4' : 'w-[280px] p-4'
         )}
       >
@@ -358,7 +359,7 @@ export function Sidebar() {
       )}
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-50 flex w-[280px] flex-col gap-4 border-r bg-background p-4 shadow-xl transition-transform duration-300 lg:hidden',
+          'candy-bg fixed inset-y-0 left-0 z-50 flex w-[280px] flex-col gap-4 overflow-y-auto rounded-r-3xl p-4 shadow-2xl transition-transform duration-300 lg:hidden',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >

@@ -245,18 +245,21 @@ export function EventModal() {
             titleInputRef.current?.focus();
           }}
           className={cn(
-            'fixed z-50 flex flex-col border bg-background shadow-lg duration-300',
+            'clay fixed z-50 flex flex-col border-0 duration-300',
             'data-[state=open]:animate-in data-[state=closed]:animate-out',
             isMobile
-              ? 'inset-x-0 bottom-0 top-auto max-h-[92vh] rounded-t-2xl data-[state=open]:slide-in-from-bottom data-[state=closed]:slide-out-to-bottom'
-              : 'left-1/2 top-1/2 w-full max-w-[540px] -translate-x-1/2 -translate-y-1/2 max-h-[90vh] rounded-xl data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95'
+              ? 'inset-x-0 bottom-0 top-auto max-h-[92vh] overflow-hidden rounded-t-[2rem] data-[state=open]:slide-in-from-bottom data-[state=closed]:slide-out-to-bottom'
+              : 'left-1/2 top-1/2 w-full max-w-[540px] -translate-x-1/2 -translate-y-1/2 max-h-[90vh] overflow-hidden rounded-[2rem] data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95'
           )}
         >
-          <div className="flex shrink-0 items-center justify-between border-b px-5 py-4">
-            <DialogPrimitive.Title className="text-lg font-semibold">
-              {editingEventId ? 'Chỉnh sửa sự kiện' : 'Tạo sự kiện'}
+          <div className="flex shrink-0 items-center justify-between bg-gradient-to-r from-pink-200/70 via-fuchsia-200/60 to-violet-200/70 px-5 py-4 dark:from-pink-500/20 dark:via-fuchsia-500/15 dark:to-violet-500/20">
+            <DialogPrimitive.Title className="flex items-center gap-2 font-fun text-xl font-extrabold">
+              <span className="gloss flex h-9 w-9 items-center justify-center rounded-xl bg-white/80 text-xl shadow-[0_3px_0_rgb(0_0_0/0.08)] dark:bg-white/10">
+                {editingEventId ? '✏️' : '🌟'}
+              </span>
+              {editingEventId ? 'Chỉnh sửa sự kiện' : 'Tạo sự kiện mới'}
             </DialogPrimitive.Title>
-            <DialogPrimitive.Close className="rounded-full p-2 hover:bg-muted">
+            <DialogPrimitive.Close className="rounded-full bg-white/70 p-2 transition-transform hover:rotate-90 hover:bg-white dark:bg-white/10">
               <X className="h-4 w-4" />
             </DialogPrimitive.Close>
           </div>

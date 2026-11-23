@@ -74,18 +74,18 @@ function App() {
       <Suspense fallback={null}>
         <FirebaseBootstrap />
       </Suspense>
-      <div className="flex h-screen overflow-hidden bg-background">
+      <div className="candy-bg flex h-screen gap-2 overflow-hidden lg:p-2">
         <ErrorBoundary section="Thanh bên">
           <Sidebar />
         </ErrorBoundary>
-        <div className="flex flex-1 flex-col min-w-0">
+        <div className="flex min-w-0 flex-1 flex-col gap-2">
           <ErrorBoundary section="Tiêu đề">
             <Header />
           </ErrorBoundary>
           <FirebaseStatusBanner />
           <main
             id="main-calendar"
-            className="flex-1 overflow-hidden relative"
+            className="relative mx-2 mb-2 flex-1 overflow-hidden rounded-3xl glass lg:mx-0 lg:mb-0"
             tabIndex={-1}
           >
             <CalendarGrid />
@@ -104,7 +104,7 @@ function App() {
         <Toaster />
         <Button
           size="icon"
-          className="fixed bottom-6 right-6 z-30 h-14 w-14 rounded-full shadow-xl lg:hidden"
+          className="fixed bottom-6 right-6 z-30 h-16 w-16 rounded-full lg:hidden"
           onClick={() => openEventModal()}
           aria-label="Tạo sự kiện mới"
         >

@@ -65,21 +65,20 @@ export const MonthDayCell = memo(function MonthDayCell({
             }
           }}
           className={cn(
-            'group relative flex min-h-[108px] flex-col border-b border-r border-border p-1.5',
+            'clay-sm group relative flex min-h-[96px] flex-col overflow-hidden rounded-2xl p-1.5',
             'cursor-pointer transition-all duration-200',
-            'hover:bg-accent/40 dark:hover:bg-accent/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-            !inMonth && 'bg-muted/25 dark:bg-muted/10',
-            today && 'bg-primary/5 dark:bg-primary/10',
-            snapshot.isDraggingOver &&
-              'bg-primary/10 ring-2 ring-inset ring-primary/40 dark:bg-primary/15'
+            'hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+            !inMonth && 'opacity-55 saturate-50',
+            today && 'ring-2 ring-pink-400 bg-gradient-to-br from-pink-50 to-violet-50 dark:from-pink-500/15 dark:to-violet-500/15',
+            snapshot.isDraggingOver && 'ring-2 ring-violet-400 bg-violet-50 dark:bg-violet-500/15'
           )}
         >
           <div className="mb-1 flex items-start justify-between">
             <span
               className={cn(
-                'inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-medium transition-colors',
+                'inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-xl font-fun text-sm font-bold transition-all',
                 today
-                  ? 'bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2 ring-offset-background shadow-sm'
+                  ? 'candy-btn animate-pop-in !shadow-[0_3px_0_rgb(190_24_120)]'
                   : 'text-foreground group-hover:bg-muted'
               )}
             >
@@ -101,7 +100,7 @@ export const MonthDayCell = memo(function MonthDayCell({
             )}
             <div className="flex min-w-0 flex-1 items-start justify-end gap-1 overflow-hidden">
               <LunarBadge date={day} variant="cell" />
-              <div className="hidden sm:block">
+              <div className="hidden xl:block">
                 <DayWeatherBadge date={day} compact />
               </div>
             </div>
@@ -121,16 +120,16 @@ export const MonthDayCell = memo(function MonthDayCell({
                     {...drag.draggableProps}
                     {...drag.dragHandleProps}
                     className={cn(
-                      'rounded px-1.5 py-0.5 text-[0.65rem] leading-tight truncate',
-                      'border-l-[3px] cursor-grab active:cursor-grabbing',
-                      'transition-shadow duration-150 hover:shadow-md hover:z-10',
+                      'truncate rounded-lg px-1.5 py-[3px] text-[0.68rem] font-bold leading-tight text-foreground',
+                      'cursor-grab active:cursor-grabbing',
+                      'transition-transform duration-150 hover:z-10 hover:-translate-y-px hover:scale-[1.03]',
                       snap.isDragging && 'dragging z-50 shadow-lg opacity-95',
-                      isEventOngoing(occ) && 'ring-1 ring-primary'
+                      isEventOngoing(occ) && 'ring-2 ring-pink-400'
                     )}
                     style={{
-                      background: hexToRgba(occ.color, 0.22),
-                      borderLeftColor: occ.color,
-                      color: occ.color,
+                      background: `linear-gradient(135deg, ${hexToRgba(occ.color, 0.32)}, ${hexToRgba(occ.color, 0.16)})`,
+                      boxShadow: `inset 0 -2px 0 ${hexToRgba(occ.color, 0.45)}, inset 0 1px 0 rgb(255 255 255 / 0.5)`,
+                      ...drag.draggableProps.style,
                     }}
                     onClick={(e) => {
                       e.stopPropagation();

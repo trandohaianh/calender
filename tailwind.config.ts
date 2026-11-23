@@ -47,7 +47,7 @@ const config: Config = {
         sm: 'calc(var(--radius) - 4px)',
       },
       fontFamily: {
-        sans: ['system-ui', 'Segoe UI', 'Roboto', 'sans-serif'],
+        sans: ['Nunito', 'system-ui', 'Segoe UI', 'Roboto', 'sans-serif'],
         mono: ['ui-monospace', 'Consolas', 'monospace'],
         fun: ['"Baloo 2"', 'system-ui', 'sans-serif'],
         hand: ['"Patrick Hand"', '"Comic Sans MS"', 'cursive'],

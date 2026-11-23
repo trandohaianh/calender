@@ -54,7 +54,7 @@ const MiniMonth = memo(function MiniMonth({
     .reduce((sum, d) => sum + (counts.get(dayKey(d)) ?? 0), 0);
 
   return (
-    <div className="rounded-xl border bg-card p-3 shadow-sm">
+    <div className="clay tilt rounded-3xl p-3">
       <button
         type="button"
         onClick={() => onMonth(month)}

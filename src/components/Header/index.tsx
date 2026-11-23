@@ -89,7 +89,7 @@ export function Header() {
 
   return (
     <header
-      className="flex shrink-0 flex-col border-b bg-background md:h-16"
+      className="glass mx-2 mt-2 flex shrink-0 flex-col rounded-3xl md:h-16 lg:mx-0 lg:mt-0"
       role="banner"
       aria-label="Thanh điều hướng lịch"
     >
@@ -100,7 +100,7 @@ export function Header() {
         <div ref={searchRef} className="relative min-w-[72px] flex-1 max-w-sm md:max-w-md xl:min-w-[160px]">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            className="h-9 rounded-full border-0 bg-secondary/80 pl-9 text-xs sm:text-sm sm:h-10 transition-colors focus:bg-background focus:ring-2 focus:ring-primary/30"
+            className="clay-sm h-9 rounded-full border-0 pl-9 text-xs sm:text-sm sm:h-10 transition-all focus:ring-2 focus:ring-pink-300"
             placeholder="Tìm sự kiện..."
             aria-label="Tìm kiếm sự kiện"
             aria-expanded={searchOpen}
@@ -118,7 +118,7 @@ export function Header() {
             <div
               id="search-results"
               role="listbox"
-              className="absolute left-0 top-full z-50 mt-1 w-[min(24rem,90vw)] overflow-hidden rounded-xl border bg-popover shadow-lg"
+              className="clay absolute left-0 top-full z-50 mt-2 w-[min(24rem,90vw)] overflow-hidden rounded-2xl animate-pop-in"
             >
               {searchResults.map((ev) => (
                 <button
@@ -166,7 +166,7 @@ export function Header() {
             <ChevronRight className="h-4 w-4" aria-hidden />
           </Button>
           <span
-            className="min-w-[120px] text-center text-xs font-bold uppercase tracking-wider text-foreground xl:min-w-[180px]"
+            className="candy-text min-w-[120px] text-center font-fun text-base font-extrabold capitalize xl:min-w-[180px]"
             aria-live="polite"
           >
             {periodTitle}
@@ -175,7 +175,7 @@ export function Header() {
 
         {/* View switcher */}
         <select
-          className="hidden shrink-0 rounded-md border bg-background px-2 py-1.5 text-xs font-semibold md:block 2xl:hidden"
+          className="clay-sm hidden shrink-0 rounded-full border-0 px-3 py-1.5 text-xs font-bold md:block 2xl:hidden"
           value={currentView}
           onChange={(e) => handleViewChange(e.target.value as ViewMode)}
           aria-label="Chế độ xem lịch"
@@ -187,7 +187,7 @@ export function Header() {
           ))}
         </select>
         <div
-          className="hidden shrink-0 overflow-hidden rounded-lg border bg-muted/30 p-0.5 2xl:flex"
+          className="clay-sm hidden shrink-0 gap-0.5 overflow-hidden rounded-full p-1 2xl:flex"
           role="tablist"
           aria-label="Chế độ xem lịch"
         >
@@ -199,10 +199,10 @@ export function Header() {
               aria-selected={currentView === v.id}
               onClick={() => handleViewChange(v.id)}
               className={cn(
-                'rounded-md px-2.5 py-1 text-xs font-semibold transition-all lg:px-3',
+                'rounded-full px-3 py-1 text-xs font-bold transition-all',
                 currentView === v.id
-                  ? 'bg-primary text-primary-foreground shadow-xs'
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? 'candy-btn !shadow-[0_3px_0_rgb(190_24_120)]'
+                  : 'text-muted-foreground hover:bg-pink-100 hover:text-foreground dark:hover:bg-pink-500/20'
               )}
             >
               {v.label}
@@ -241,7 +241,7 @@ export function Header() {
       </div>
 
       {/* Mobile: period + nav row */}
-      <div className="flex items-center justify-between gap-2 border-t px-3 py-1.5 md:hidden bg-muted/10">
+      <div className="flex items-center justify-between gap-2 border-t border-white/50 px-3 py-1.5 md:hidden dark:border-white/5">
         <div className="flex items-center gap-0.5">
           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate(-1)}>
             <ChevronLeft className="h-4 w-4" />
@@ -253,7 +253,7 @@ export function Header() {
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
-        <span className="truncate text-xs font-bold capitalize">{periodTitle}</span>
+        <span className="candy-text truncate font-fun text-sm font-extrabold capitalize">{periodTitle}</span>
         <select
           className="rounded-md border bg-background px-2 py-1 text-xs font-medium"
           value={currentView}

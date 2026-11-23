@@ -179,7 +179,8 @@ export function useEvents() {
     setEvents(local);
     setLoading(false);
 
-    if (!userId || !isFirebaseConfigured()) {
+    // Chỉ đồng bộ cloud khi đã đăng nhập Firebase (tài khoản mẫu/chưa đăng nhập: chỉ lưu trên máy)
+    if (!userId || !isFirebaseConfigured() || !hasFirebaseSession()) {
       return;
     }
 
