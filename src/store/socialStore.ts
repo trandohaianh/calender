@@ -82,24 +82,34 @@ export const useSocialStore = create<SocialState>((set, get) => ({
                 });
               }
             }
-            for (const fid of want) {
-              if (profileUnsubs.has(fid)) continue;
-              profileUnsubs.set(
+            // Danh sách bạn hiện ra ngay khi vừa bấm "Đồng ý" (trước khi máy chủ lưu xong),
+            // nên lần đọc hồ sơ đầu tiên có thể bị từ chối → thử lại vài lần, giãn dần.
+            const watchProfile = (fid: string, attempt: number) => {
+              const un = api.subscribeProfile(
                 fid,
-                api.subscribeProfile(
-                  fid,
-                  (p) =>
-                    set((s) => {
-                      if (!p) {
-                        const { [fid]: _gone, ...rest } = s.profiles;
-                        return { profiles: rest };
-                      }
-                      return { profiles: { ...s.profiles, [fid]: p } };
-                    }),
-                  // Bạn vừa huỷ kết bạn → mất quyền đọc: bỏ qua lặng lẽ
-                  () => undefined
-                )
+                (p) =>
+                  set((s) => {
+                    if (!p) {
+                      const { [fid]: _gone, ...rest } = s.profiles;
+                      return { profiles: rest };
+                    }
+                    return { profiles: { ...s.profiles, [fid]: p } };
+                  }),
+                () => {
+                  // Bị từ chối: hoặc chưa lưu xong, hoặc đã bị huỷ kết bạn
+                  if (attempt >= 6 || get().uid !== uid) return;
+                  const timer = window.setTimeout(() => {
+                    const stillFriend = get().friends.some((f) => f.uid === fid);
+                    if (stillFriend && profileUnsubs.get(fid) === cancel) watchProfile(fid, attempt + 1);
+                  }, 800 * 2 ** attempt);
+                  const cancel = () => window.clearTimeout(timer);
+                  profileUnsubs.set(fid, cancel);
+                }
               );
+              profileUnsubs.set(fid, un);
+            };
+            for (const fid of want) {
+              if (!profileUnsubs.has(fid)) watchProfile(fid, 0);
             }
           },
           onError

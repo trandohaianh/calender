@@ -77,7 +77,7 @@ export const MonthDayCell = memo(function MonthDayCell({
           <div className="mb-1 flex items-start justify-between">
             <span
               className={cn(
-                'inline-flex h-7 w-7 items-center justify-center rounded-full text-xs font-medium transition-colors',
+                'inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-medium transition-colors',
                 today
                   ? 'bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2 ring-offset-background shadow-sm'
                   : 'text-foreground group-hover:bg-muted'
@@ -99,7 +99,7 @@ export const MonthDayCell = memo(function MonthDayCell({
                 📸{dayMemories.length > 1 ? dayMemories.length : ''}
               </button>
             )}
-            <div className="flex min-w-0 items-start gap-1 overflow-hidden">
+            <div className="flex min-w-0 flex-1 items-start justify-end gap-1 overflow-hidden">
               <LunarBadge date={day} variant="cell" />
               <div className="hidden sm:block">
                 <DayWeatherBadge date={day} compact />

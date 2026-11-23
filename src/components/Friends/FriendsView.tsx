@@ -11,9 +11,7 @@ import { ProfileCard } from './ProfileCard';
 import { AddFriendCard, IncomingRequests } from './AddFriendCard';
 import { CoupleCard, FriendCard } from './FriendCards';
 
-export function canUseSocial(user: ReturnType<typeof useAuthStore.getState>['user']) {
-  return !!user && !user.isLocal && !user.isAnonymous;
-}
+import { canUseSocial } from '@/social/eligibility';
 
 export function FriendsView() {
   const user = useAuthStore((s) => s.user);

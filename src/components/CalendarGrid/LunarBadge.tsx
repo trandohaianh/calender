@@ -97,7 +97,7 @@ export const LunarBadge = memo(function LunarBadge({ date, variant, className }:
       {holidays[0] && (
         <span
           className={cn(
-            'hidden max-w-[5.5rem] truncate text-[0.58rem] font-medium sm:block',
+            'hidden max-w-full truncate text-[0.58rem] font-medium sm:block',
             isDayOff ? 'text-red-500' : 'text-amber-600 dark:text-amber-400'
           )}
           title={holidays.map((h) => h.name).join(', ')}

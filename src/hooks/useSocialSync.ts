@@ -4,11 +4,12 @@ import { useCalendarStore } from '@/store/calendarStore';
 import { useSocialStore } from '@/store/socialStore';
 import { toastInfo } from '@/store/toastStore';
 import { daysUntil, nextBirthday } from '@/social/socialEvents';
+import { canUseSocial } from '@/social/eligibility';
 
 /** Bật đồng bộ bạn thân khi có tài khoản Firebase thật; nhắc sinh nhật hôm nay */
 export function useSocialSync() {
   const user = useAuthStore((s) => s.user);
-  const eligible = !!user && !user.isLocal && !user.isAnonymous;
+  const eligible = canUseSocial(user);
   const uid = eligible ? user!.uid : null;
   const displayName = user?.displayName ?? user?.email?.split('@')[0] ?? null;
 
