@@ -78,10 +78,14 @@ export function AuthModal() {
       toastError('Vui lòng điền đủ họ tên và email');
       return;
     }
+    if (password.length < 6) {
+      toastError('Mật khẩu cần ít nhất 6 ký tự');
+      return;
+    }
     setIsSubmitting(true);
     clearError();
     try {
-      await signUpWithEmail(email.trim(), password || '123456', displayName.trim());
+      await signUpWithEmail(email.trim(), password, displayName.trim());
       // Update avatar in local store
       useLocalAuthStore.getState().updateProfile({ photoURL: selectedAvatar });
       toastSuccess('Đăng ký tài khoản thành công!');
