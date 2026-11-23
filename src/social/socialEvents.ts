@@ -3,6 +3,7 @@ import { Timestamp } from 'firebase/firestore';
 import { useCalendarStore } from '@/store/calendarStore';
 import { useSocialStore } from '@/store/socialStore';
 import { lunarToSolar } from '@/lib/lunar';
+import { countdownTheme, parseKey, useCountdownStore, type Countdown } from '@/store/countdownStore';
 import type { CalendarEvent } from '@/types';
 import type { FriendLink, SharedMemory, SocialProfile } from './types';
 
@@ -10,10 +11,10 @@ import type { FriendLink, SharedMemory, SocialProfile } from './types';
 export const SOCIAL_CALENDAR_ID = 'social-friends';
 export const SOCIAL_COLOR = '#ec4899';
 
-export const VIRTUAL_PREFIX = { birthday: 'bday:', love: 'love:', shared: 'shared:' } as const;
+export const VIRTUAL_PREFIX = { birthday: 'bday:', love: 'love:', shared: 'shared:', countdown: 'cd:' } as const;
 
 export function isVirtualEventId(id: string) {
-  return id.startsWith('bday:') || id.startsWith('love:') || id.startsWith('shared:');
+  return id.startsWith('bday:') || id.startsWith('love:') || id.startsWith('shared:') || id.startsWith('cd:');
 }
 
 function allDay(id: string, title: string, start: Date, extra: Partial<CalendarEvent> = {}): CalendarEvent {
@@ -107,6 +108,18 @@ export function buildSocialEvents(
 }
 
 /** Sự kiện của bạn + sinh nhật / kỷ niệm của bạn thân (nếu bật) */
+/** Lịch ảo cho ngày đích của các đếm ngược */
+export const COUNTDOWN_CALENDAR_ID = 'countdowns';
+
+export function buildCountdownEvents(list: Countdown[]): CalendarEvent[] {
+  return list.map((c) =>
+    allDay(`${VIRTUAL_PREFIX.countdown}${c.id}`, `${c.emoji} ${c.title}`, parseKey(c.date), {
+      color: countdownTheme(c.theme).color,
+      calendarId: COUNTDOWN_CALENDAR_ID,
+    })
+  );
+}
+
 export function useAllEvents(): CalendarEvent[] {
   const events = useCalendarStore((s) => s.events);
   const showSocial = useCalendarStore((s) => s.showSocial);
@@ -114,11 +127,14 @@ export function useAllEvents(): CalendarEvent[] {
   const friends = useSocialStore((s) => s.friends);
   const profiles = useSocialStore((s) => s.profiles);
   const shared = useSocialStore((s) => s.shared);
+  const countdowns = useCountdownStore((s) => s.items);
   return useMemo(() => {
-    if (!showSocial) return events;
-    const extra = buildSocialEvents(me, friends, profiles, shared);
+    const extra = [
+      ...buildCountdownEvents(countdowns),
+      ...(showSocial ? buildSocialEvents(me, friends, profiles, shared) : []),
+    ];
     return extra.length ? [...events, ...extra] : events;
-  }, [events, showSocial, me, friends, profiles, shared]);
+  }, [events, showSocial, me, friends, profiles, shared, countdowns]);
 }
 
 /** Ngày sinh nhật kế tiếp (từ hôm nay) */

@@ -19,6 +19,8 @@ import { AuthModal } from '@/components/Auth';
 import { WeatherAiModal } from '@/components/WeatherAi/WeatherAiModal';
 import { MemoryDialog } from '@/components/Memories/MemoryDialog';
 import { useSocialSync } from '@/hooks/useSocialSync';
+import { CountdownStrip } from '@/components/Countdown/CountdownStrip';
+import { CountdownDialog } from '@/components/Countdown/CountdownDialog';
 
 const SharedNoteDialog = lazy(() =>
   import('@/components/Friends/SharedNoteDialog').then((m) => ({ default: m.SharedNoteDialog }))
@@ -40,6 +42,8 @@ function App() {
   useSocialSync();
 
   const openEventModal = useCalendarStore((s) => s.openEventModal);
+  const currentView = useCalendarStore((s) => s.currentView);
+  const showCountdowns = currentView !== 'friends' && currentView !== 'memories';
 
   useEffect(() => {
     useCalendarStore.getState().setLoading(false);
@@ -83,6 +87,11 @@ function App() {
             <Header />
           </ErrorBoundary>
           <FirebaseStatusBanner />
+          {showCountdowns && (
+            <ErrorBoundary section="Đếm ngược">
+              <CountdownStrip />
+            </ErrorBoundary>
+          )}
           <main
             id="main-calendar"
             className="relative mx-2 mb-2 flex-1 overflow-hidden rounded-3xl glass lg:mx-0 lg:mb-0"
@@ -98,6 +107,7 @@ function App() {
         <AuthModal />
         <WeatherAiModal />
         <MemoryDialog />
+        <CountdownDialog />
         <Suspense fallback={null}>
           <SharedNoteDialog />
         </Suspense>
