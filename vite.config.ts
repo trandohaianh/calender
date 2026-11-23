@@ -23,8 +23,8 @@ export default defineConfig({
         short_name: 'Calendar',
         description:
           'Lịch cá nhân — quản lý sự kiện, đồng bộ Firebase, hoạt động offline',
-        theme_color: '#1a73e8',
-        background_color: '#ffffff',
+        theme_color: '#ec4899',
+        background_color: '#fdf4fb',
         display: 'standalone',
         orientation: 'portrait-primary',
         scope: '/',

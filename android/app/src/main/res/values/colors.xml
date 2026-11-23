@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Màu kẹo hồng — khớp --primary trong src/index.css -->
+    <color name="colorPrimary">#EC4899</color>
+    <color name="colorPrimaryDark">#DB2777</color>
+    <color name="colorAccent">#8B5CF6</color>
+</resources>

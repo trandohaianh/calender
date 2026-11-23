@@ -47,7 +47,7 @@ export async function scheduleNotification(
         schedule: { at: new Date(at) },
         extra: input.extra,
         smallIcon: 'ic_stat_icon_config_sample',
-        iconColor: '#1a73e8',
+        iconColor: '#ec4899',
       },
     ],
   });

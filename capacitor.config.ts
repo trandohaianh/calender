@@ -1,11 +1,14 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 /**
- * Đổi appId trước khi publish CH Play:
- * com.yourname.mycalendar → com.tenban.mycalendar
+ * appId = mã gói trên CH Play. KHÔNG đổi được sau lần tải lên đầu tiên,
+ * nên nếu muốn tên khác thì đổi ngay bây giờ (và trong android/app/build.gradle).
  */
+const BRAND = '#ec4899'; // hồng kẹo — khớp --primary
+const PAPER = '#fdf4fb'; // nền sáng — khớp --background
+
 const config: CapacitorConfig = {
-  appId: 'com.yourname.mycalendar',
+  appId: 'com.trandohaianh.mycalendar',
   appName: 'MyCalendar',
   webDir: 'dist',
 
@@ -16,39 +19,24 @@ const config: CapacitorConfig = {
 
   android: {
     allowMixedContent: false,
-    backgroundColor: '#1a73e8',
+    backgroundColor: PAPER,
     buildOptions: {
-      keystorePath: undefined,
-      keystorePassword: undefined,
-      keystoreAlias: undefined,
-      keystoreAliasPassword: undefined,
+      // Mật khẩu keystore KHÔNG ghi ở đây — xem docs/CH_PLAY.md (keystore.properties)
       releaseType: 'AAB',
     },
   },
 
   plugins: {
-  SplashScreen: {
-      launchShowDuration: 2000,
+    SplashScreen: {
+      launchShowDuration: 1500,
       launchAutoHide: true,
-      backgroundColor: '#1a73e8',
-      androidSplashResourceName: 'splash',
+      backgroundColor: PAPER,
       androidScaleType: 'CENTER_CROP',
       showSpinner: false,
-      splashFullScreen: true,
-      splashImmersive: true,
-    },
-    StatusBar: {
-      style: 'LIGHT',
-      backgroundColor: '#1a73e8',
-      overlaysWebView: false,
-    },
-    PushNotifications: {
-      presentationOptions: ['badge', 'sound', 'alert'],
     },
     LocalNotifications: {
       smallIcon: 'ic_stat_icon_config_sample',
-      iconColor: '#1a73e8',
-      sound: 'beep.wav',
+      iconColor: BRAND,
     },
   },
 };

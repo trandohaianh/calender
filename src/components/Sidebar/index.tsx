@@ -359,7 +359,7 @@ export function Sidebar() {
       )}
       <aside
         className={cn(
-          'candy-bg fixed inset-y-0 left-0 z-50 flex w-[280px] flex-col gap-4 overflow-y-auto rounded-r-3xl p-4 shadow-2xl transition-transform duration-300 lg:hidden',
+          'candy-bg fixed inset-y-0 left-0 z-50 flex w-[280px] flex-col gap-4 overflow-y-auto rounded-r-3xl px-4 safe-y shadow-2xl transition-transform duration-300 lg:hidden',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >

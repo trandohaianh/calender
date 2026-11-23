@@ -108,7 +108,7 @@ export function Header() {
 
   return (
     <header
-      className="glass mx-2 mt-2 flex shrink-0 flex-col rounded-3xl md:h-16 lg:mx-0 lg:mt-0"
+      className="glass relative z-30 mx-2 mt-2 flex shrink-0 flex-col rounded-3xl md:h-16 lg:mx-0 lg:mt-0"
       role="banner"
       aria-label="Thanh điều hướng lịch"
     >

@@ -8,14 +8,42 @@ import {
   Check,
   ChevronDown,
   Plus,
+  Trash2,
 } from 'lucide-react';
 import { LazyAvatar } from '@/components/LazyAvatar';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/authStore';
 import { useLocalAuthStore, AVATAR_PRESETS } from '@/store/localAuthStore';
 import { useWeatherStore } from '@/store/weatherStore';
-import { toastSuccess } from '@/store/toastStore';
+import { toastError, toastSuccess } from '@/store/toastStore';
 import { cn } from '@/lib/utils';
+
+/** Xoá tài khoản + dữ liệu trên máy chủ (CH Play bắt buộc có trong app) */
+async function deleteMyAccount() {
+  const user = useAuthStore.getState().user;
+  if (!user) return;
+  const ok = window.confirm(
+    'Xoá vĩnh viễn tài khoản này?\n\n' +
+      '• Lịch đã đồng bộ, hồ sơ, danh sách bạn thân và kỷ niệm chung trên máy chủ sẽ bị xoá, không khôi phục được.\n' +
+      '• Dữ liệu chỉ lưu trên máy này (kỷ niệm riêng, đếm ngược) vẫn giữ nguyên.'
+  );
+  if (!ok) return;
+  if (!window.confirm('Chắc chắn chưa? Bấm OK để xoá ngay.')) return;
+
+  try {
+    if (user.isLocal) {
+      const local = useLocalAuthStore.getState();
+      useLocalAuthStore.setState({ accounts: local.accounts.filter((a) => a.uid !== user.uid) });
+    } else {
+      const { deleteFirebaseAccount } = await import('@/firebase/deleteAccount');
+      await deleteFirebaseAccount();
+    }
+    await useAuthStore.getState().signOut();
+    toastSuccess('Đã xoá tài khoản 👋');
+  } catch (e) {
+    toastError('Chưa xoá được tài khoản', e instanceof Error ? e.message : undefined);
+  }
+}
 
 export function UserProfileDropdown() {
   const user = useAuthStore((s) => s.user);
@@ -235,6 +263,26 @@ export function UserProfileDropdown() {
               <LogOut className="h-4 w-4" />
               <span>Đăng xuất</span>
             </button>
+
+            <button
+              type="button"
+              onClick={async () => {
+                setIsOpen(false);
+                await deleteMyAccount();
+              }}
+              className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-[11px] font-medium text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              <span>Xoá tài khoản</span>
+            </button>
+            <a
+              href="/privacy.html"
+              target="_blank"
+              rel="noopener"
+              className="block px-2 pt-1 text-[10px] text-muted-foreground underline-offset-2 hover:underline"
+            >
+              Chính sách quyền riêng tư
+            </a>
           </div>
         </div>
       )}

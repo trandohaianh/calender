@@ -78,7 +78,7 @@ function App() {
       <Suspense fallback={null}>
         <FirebaseBootstrap />
       </Suspense>
-      <div className="candy-bg flex h-screen gap-2 overflow-hidden lg:p-2">
+      <div className="safe-area candy-bg flex h-screen gap-2 overflow-hidden lg:p-2">
         <ErrorBoundary section="Thanh bên">
           <Sidebar />
         </ErrorBoundary>
@@ -114,7 +114,7 @@ function App() {
         <Toaster />
         <Button
           size="icon"
-          className="fixed bottom-6 right-6 z-30 h-16 w-16 rounded-full lg:hidden"
+          className="fab-safe fixed right-6 z-30 h-16 w-16 rounded-full lg:hidden"
           onClick={() => openEventModal()}
           aria-label="Tạo sự kiện mới"
         >

@@ -1,12 +1,18 @@
 import { useEffect } from 'react';
 import { App as CapApp } from '@capacitor/app';
-import { StatusBar, Style } from '@capacitor/status-bar';
+import { SystemBars, SystemBarsStyle } from '@capacitor/core';
 import { SplashScreen } from '@capacitor/splash-screen';
 import { Network } from '@capacitor/network';
 import { useCalendarStore } from '@/store/calendarStore';
 import { useOfflineStore } from '@/store/offlineStore';
-import { isAndroid, isNative } from '@/capacitor/platform';
+import { isNative } from '@/capacitor/platform';
 import { requestNotificationPermission } from '@/capacitor/notifications';
+
+/** App tràn viền (Android 15+): nền thanh trạng thái là nền trang, chỉ cần chọn màu chữ */
+async function syncSystemBars() {
+  const dark = document.documentElement.classList.contains('dark');
+  await SystemBars.setStyle({ style: dark ? SystemBarsStyle.Dark : SystemBarsStyle.Light });
+}
 
 /**
  * Khởi tạo plugin Capacitor: status bar, splash, network, hardware back.
@@ -18,10 +24,7 @@ export function useCapacitorInit() {
     void (async () => {
       try {
         await SplashScreen.hide();
-        if (isAndroid()) {
-          await StatusBar.setStyle({ style: Style.Light });
-          await StatusBar.setBackgroundColor({ color: '#1a73e8' });
-        }
+        await syncSystemBars();
         await requestNotificationPermission();
 
         const status = await Network.getStatus();
@@ -30,6 +33,10 @@ export function useCapacitorInit() {
         console.warn('[CapacitorInit]', e);
       }
     })();
+
+    // Đổi chữ/biểu tượng thanh trạng thái theo chế độ sáng/tối của app
+    const themeObserver = new MutationObserver(() => void syncSystemBars());
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 
     const netListener = Network.addListener('networkStatusChange', (s) => {
       useOfflineStore.getState().setOnline(s.connected);
@@ -56,6 +63,7 @@ export function useCapacitorInit() {
     });
 
     return () => {
+      themeObserver.disconnect();
       void netListener.then((l) => l.remove());
       void backListener.then((l) => l.remove());
     };

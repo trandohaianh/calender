@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="app_name">MyCalendar</string>
     <string name="title_activity_main">MyCalendar</string>
-    <string name="package_name">com.yourname.mycalendar</string>
-    <string name="custom_url_scheme">mycalendar</string>
+    <string name="package_name">com.trandohaianh.mycalendar</string>
+    <string name="custom_url_scheme">com.trandohaianh.mycalendar</string>
 </resources>

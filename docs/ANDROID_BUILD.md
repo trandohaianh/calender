@@ -1,256 +1,120 @@
-# Hướng dẫn build Android APK / AAB — MyCalendar
+# Đưa MyCalendar lên CH Play
 
-## Yêu cầu
+Phần code đã sẵn sàng:
+- Capacitor 8, nhắm API 36 (Android 16), chạy từ Android 7 (API 24).
+- Mã gói `com.trandohaianh.mycalendar`.
+- Icon và màn chờ kẹo hồng, có cả chế độ tối.
+- Nút **Xoá tài khoản** trong app.
+- Trang chính sách tại `/privacy.html`.
 
-| Công cụ | Phiên bản gợi ý |
-|---------|------------------|
-| Node.js | 18+ |
-| JDK | 17 (Android Studio embedded) |
-| Android Studio | Hedgehog+ |
-| Android SDK | API 34 (compileSdk) |
-
----
-
-## 1. Cấu hình lần đầu
-
-### 1.1 Đổi Application ID
-
-Trong `capacitor.config.ts`:
-
-```ts
-appId: 'com.yourname.mycalendar',  // → com.tenban.mycalendar
-```
-
-Đồng bộ `android/app/build.gradle` → `applicationId` sau `cap sync`.
-
-### 1.2 Cài dependencies
-
-```bash
-cd calendar-app
-npm install
-```
-
-Plugins đã khai báo:
-
-- `@capacitor/push-notifications`
-- `@capacitor/local-notifications`
-- `@capacitor/haptics`
-- `@capacitor/status-bar`
-- `@capacitor/splash-screen`
-- `@capacitor/network`
-- `@capacitor/app` (hardware back)
-
-### 1.3 Tạo project Android (lần đầu)
-
-```bash
-npm run build
-npx cap add android    # chỉ chạy 1 lần nếu chưa có thư mục android/
-npx cap sync android
-```
-
-Sau `cap add android`, **merge** nội dung từ repo:
-
-- `android/app/src/main/AndroidManifest.xml` (permissions, deeplinks, receivers)
-- `android/app/src/main/res/**` (adaptive icon, notification icon)
-
-Hoặc copy thủ công các block `<uses-permission>`, `<intent-filter>`, receivers vào manifest do Capacitor generate.
-
-### 1.4 Icon & splash
-
-1. Copy `public/icons/icon-512.png` → dùng [Android Asset Studio](https://romannurik.github.io/AndroidAssetStudio/) tạo mipmap.
-2. Đặt vào `android/app/src/main/res/mipmap-*`.
-3. Splash: `android/app/src/main/res/drawable/splash.png` (2732×2732 khuyến nghị) hoặc dùng plugin SplashScreen.
+Các bước bên dưới là việc **bạn phải tự làm**, vì cần tài khoản, mật khẩu và giấy tờ của bạn.
 
 ---
 
-## 2. Scripts npm
+## 0. Kiểm tra mã gói (chỉ làm một lần)
 
-| Lệnh | Mô tả |
-|------|--------|
-| `npm run build:web` | Chỉ build Vite → `dist/` |
-| `npm run build:android` | Build web + sync + mở Android Studio |
-| `npm run build:android:release` | Build web + sync (không mở IDE) |
-| `npm run deploy:firebase` | Deploy PWA lên Firebase Hosting |
+`com.trandohaianh.mycalendar` **không đổi được** sau lần tải lên đầu tiên. Nếu muốn tên khác, sửa ở cả hai chỗ trước khi tải lên:
+- `capacitor.config.ts` → `appId`
+- `android/app/build.gradle` → `namespace` và `applicationId`
 
-```bash
+Sau đó chạy `npx cap sync android`.
+
+## 1. Cài công cụ
+
+| Công cụ | Ghi chú |
+|---|---|
+| Android Studio (bản mới nhất) | Có sẵn JDK 21 và Android SDK. Máy hiện có Java 8, quá cũ, không build được |
+| Android SDK Platform 36 | Android Studio → SDK Manager |
+
+## 2. Thử trên điện thoại
+
+```powershell
 npm run build:android
 ```
 
----
+Lệnh này build web, đồng bộ sang Android và mở Android Studio. Cắm điện thoại (bật *Gỡ lỗi USB*) rồi bấm ▶ Run.
 
-## 3. Keystore signing (release)
+Những thứ cần thử:
+- đăng nhập,
+- nhắc lịch (đặt sự kiện sau 2 phút),
+- thời tiết theo vị trí,
+- chế độ tối,
+- thanh trạng thái không che nội dung,
+- nút Back.
 
-### 3.1 Tạo keystore
-
-```bash
-keytool -genkey -v -keystore mycalendar-release.keystore -alias mycalendar -keyalg RSA -keysize 2048 -validity 10000
-```
-
-Lưu file **ngoài** repo. Thêm vào `.gitignore`:
-
-```
-*.keystore
-keystore.properties
-```
-
-### 3.2 `android/keystore.properties` (local only)
-
-```properties
-storeFile=../mycalendar-release.keystore
-storePassword=YOUR_STORE_PASSWORD
-keyAlias=mycalendar
-keyPassword=YOUR_KEY_PASSWORD
-```
-
-### 3.3 `android/app/build.gradle` (thêm cuối file)
-
-```gradle
-def keystorePropertiesFile = rootProject.file("keystore.properties")
-def keystoreProperties = new Properties()
-if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-}
-
-android {
-    signingConfigs {
-        release {
-            if (keystorePropertiesFile.exists()) {
-                keyAlias keystoreProperties['keyAlias']
-                keyPassword keystoreProperties['keyPassword']
-                storeFile file(keystoreProperties['storeFile'])
-                storePassword keystoreProperties['storePassword']
-            }
-        }
-    }
-    buildTypes {
-        release {
-            signingConfig signingConfigs.release
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-}
-```
-
----
-
-## 4. Build release AAB / APK
-
-Trong Android Studio:
-
-**Build → Generate Signed Bundle / APK → Android App Bundle (AAB)** — khuyến nghị CH Play.
-
-Hoặc CLI:
-
-```bash
-cd android
-./gradlew bundleRelease          # AAB → app/build/outputs/bundle/release/
-./gradlew assembleRelease        # APK → app/build/outputs/apk/release/
-```
-
-Windows:
+## 3. Tạo khoá ký (giữ cẩn thận, mất là không cập nhật app được nữa)
 
 ```powershell
-cd android
-.\gradlew.bat bundleRelease
+& "C:\Program Files\Android\Android Studio\jbr\bin\keytool.exe" -genkeypair -v -keystore D:\cale\mycalendar-release.jks -alias mycalendar -keyalg RSA -keysize 2048 -validity 10000
 ```
 
----
+Bước tiếp theo:
+1. Sao chép `android/keystore.properties.example` thành `android/keystore.properties`.
+2. Điền mật khẩu vào file đó. Git đã được đặt để bỏ qua `keystore.properties` và `*.jks`.
+3. Sao lưu file `.jks` và mật khẩu ra một nơi khác, ví dụ USB hoặc trình quản lý mật khẩu.
 
-## 5. Deeplinks
+## 4. Build bản phát hành (.aab)
 
-| URL | Ví dụ |
-|-----|--------|
-| HTTPS App Link | `https://app.mycalendar.local/event/abc123` |
-| Custom scheme | `mycalendar://event/abc123` |
-
-Xử lý trong app (`src/hooks/useDeepLinks.ts` — tùy triển khai):
-
-```ts
-import { App } from '@capacitor/app';
-App.addListener('appUrlOpen', ({ url }) => { /* parse & open event */ });
+```powershell
+npm run build:android:release
 ```
 
-**App Links verify:** host `app.mycalendar.local` cần file `/.well-known/assetlinks.json` trên domain thật khi publish.
+File ra: `android/app/build/outputs/bundle/release/app-release.aab`
 
----
+Mỗi lần cập nhật, sửa `android/app/build.gradle`:
+- `versionCode`: tăng thêm 1,
+- `versionName`: ví dụ `1.0.1`.
 
-## 6. Push Notifications (FCM) — tùy chọn
+## 5. Firebase cho bản Android
 
-1. Tạo project Firebase → thêm app Android (package `com.yourname.mycalendar`).
-2. Tải `google-services.json` → `android/app/google-services.json`.
-3. `android/build.gradle`:
+Đăng nhập Google trên Android cần thêm vân tay SHA-1. Làm như sau:
 
-```gradle
-classpath 'com.google.gms:google-services:4.4.2'
-```
+1. Lấy vân tay SHA-1 của khoá upload:
+   `keytool -list -v -keystore D:\cale\mycalendar-release.jks -alias mycalendar`
+2. Firebase Console → Project settings → **Add app → Android**, mã gói `com.trandohaianh.mycalendar`, dán SHA-1.
+3. Sau khi lên Play Console, thêm cả SHA-1 trong *Play Console → Kiểm tra và phát hành → Thiết lập → Tính toàn vẹn của ứng dụng*. Google ký lại app bằng khoá này.
+4. Không cần `google-services.json`, vì app dùng Firebase JS SDK.
 
-4. `android/app/build.gradle` (cuối file):
+## 6. Đăng trang chính sách lên mạng
 
-```gradle
-apply plugin: 'com.google.gms.google-services'
-```
+`public/privacy.html` sẽ được đăng cùng web lên Firebase Hosting. Làm như sau:
 
----
+1. **Trước đó** mở file và thay `EMAIL_HO_TRO` bằng email hỗ trợ của bạn.
+2. Chạy:
+   ```powershell
+   npm run deploy:firebase
+   ```
 
-## 7. Checklist Google Play Console
+Link để điền vào Play Console:
+- Chính sách quyền riêng tư: `https://<tên-dự-án>.web.app/privacy.html`
+- Xoá tài khoản: `https://<tên-dự-án>.web.app/privacy.html#xoa-tai-khoan`
 
-### 7.1 Assets bắt buộc
+## 7. Play Console
 
-| Asset | Kích thước | Ghi chú |
-|-------|-----------|---------|
-| App icon | 512×512 PNG | High-res icon |
-| Feature graphic | 1024×500 | Banner store |
-| Phone screenshots | ≥2 | 1080×1920 khuyến nghị — dùng `public/screenshots/` |
-| Short description | ≤80 ký tự | |
-| Full description | ≤4000 ký tự | |
+1. Đăng ký tài khoản nhà phát triển: 25 USD, xác minh danh tính bằng CCCD.
+   Nếu là tài khoản **cá nhân**, phải chạy **thử nghiệm kín với ít nhất 12 người trong 14 ngày liên tục** rồi mới được phát hành chính thức.
+2. Tạo ứng dụng: tên *MyCalendar*, ngôn ngữ mặc định Tiếng Việt, loại Ứng dụng, Miễn phí.
+3. **Nội dung ứng dụng**:
+   - Chính sách quyền riêng tư: dùng link ở bước 6.
+   - Quyền truy cập: ghi chú rằng app dùng được không cần đăng nhập. Nếu reviewer cần thử tính năng Bạn thân, đưa họ một tài khoản test.
+   - Quảng cáo: **Không**.
+   - Xếp hạng nội dung: làm bảng câu hỏi, app lịch thường ra mức 3+.
+   - Đối tượng: 13 tuổi trở lên.
+   - **An toàn dữ liệu**, khai đúng như trang chính sách:
+     - Thu thập email, tên, ảnh (tài khoản); sự kiện lịch (nội dung do người dùng tạo); vị trí gần đúng (thời tiết, không lưu); tin nhắn gửi AI; thống kê sử dụng (Analytics).
+     - Dữ liệu được mã hoá khi truyền. Người dùng có thể yêu cầu xoá dữ liệu.
+   - Báo thức chính xác: app dùng `SCHEDULE_EXACT_ALARM` để nhắc lịch, đây là trường hợp được phép.
+4. **Trang thông tin**:
+   - Icon 512×512: `public/icons/icon-512.png`.
+   - Ảnh nổi bật 1024×500.
+   - Ít nhất 2 ảnh chụp màn hình điện thoại.
+   - Mô tả ngắn (80 ký tự) và mô tả đầy đủ.
+5. **Thử nghiệm kín**: tải `app-release.aab` lên, thêm email 12 người thử, gửi họ link tham gia. Sau 14 ngày, xin quyền phát hành chính thức.
 
-### 7.2 Store listing (điền đủ)
+## Tạo lại icon / màn chờ
 
-- **App name:** MyCalendar
-- **Category:** Productivity
-- **Contact email:** email hỗ trợ
-- **Privacy policy URL:** bắt buộc (host trên Firebase / website)
-- **Data safety:** khai báo Firebase Auth, Firestore, notifications
-- **Content rating:** questionnaire IARC
-- **Target audience:** 13+ / All ages
-- **Countries:** chọn khu vực phân phối
+Sửa `assets/icon-foreground.svg` hoặc `assets/icon-background.svg`, rồi chạy:
 
-### 7.3 Release
-
-1. **Internal testing** → upload AAB, thêm tester emails.
-2. **Closed / Open testing** (khuyến nghị).
-3. **Production** → rollout % hoặc full.
-
-### 7.4 Trước khi submit
-
-- [ ] Đổi `appId` khỏi `com.yourname.*`
-- [ ] Test offline, notifications, back button
-- [ ] `versionCode` / `versionName` tăng trong `android/app/build.gradle`
-- [ ] ProGuard (nếu bật minify) — test release build
-- [ ] Không commit keystore / passwords
-
----
-
-## 8. Hardware back (đã tích hợp)
-
-Thứ tự xử lý trong `useCapacitorInit`:
-
-1. Đóng Event Modal  
-2. Đóng Sidebar mobile  
-3. `App.exitApp()`
-
----
-
-## 9. Troubleshooting
-
-| Lỗi | Cách xử lý |
-|-----|------------|
-| Gradle sync fail | File → Invalidate Caches; JDK 17 |
-| WebView trắng | `npm run build` trước `cap sync` |
-| Notifications không hiện | Android 13+: cấp POST_NOTIFICATIONS; kiểm tra battery optimization |
-| Deeplink không mở app | Verify intent-filter; test `adb shell am start -a android.intent.action.VIEW -d "mycalendar://event/1"` |
-
-```bash
-adb shell am start -a android.intent.action.VIEW -d "mycalendar://event/test"
+```powershell
+npm run assets:generate
 ```
