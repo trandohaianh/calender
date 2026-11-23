@@ -1,4 +1,5 @@
 import { memo, useMemo } from 'react';
+import { useAllEvents } from '@/social/socialEvents';
 import {
   addDays,
   endOfMonth,
@@ -113,7 +114,7 @@ const MiniMonth = memo(function MiniMonth({
 
 export function YearView() {
   const currentDate = useCalendarStore((s) => s.currentDate);
-  const events = useCalendarStore((s) => s.events);
+  const events = useAllEvents();
   const calendars = useCalendarStore((s) => s.calendars);
   const showHolidays = useCalendarStore((s) => s.showHolidays);
   const showLunar = useCalendarStore((s) => s.showLunar);

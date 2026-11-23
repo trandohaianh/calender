@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useAllEvents } from '@/social/socialEvents';
 import { format, isToday, startOfDay, endOfDay } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { MapPin } from 'lucide-react';
@@ -18,7 +19,7 @@ interface DayViewProps {
 
 export function DayView({ onEventClick, onSlotClick }: DayViewProps) {
   const currentDate = useCalendarStore((s) => s.currentDate);
-  const events = useCalendarStore((s) => s.events);
+  const events = useAllEvents();
   const calendars = useCalendarStore((s) => s.calendars);
   const scrollRef = useRef<HTMLDivElement>(null);
 

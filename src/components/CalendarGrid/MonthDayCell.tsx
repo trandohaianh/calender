@@ -11,6 +11,7 @@ import { LunarBadge } from './LunarBadge';
 import { useMemoryStore } from '@/store/memoryStore';
 import { memoryIdFor } from '@/lib/memoryDb';
 import { toDateKey } from '@/lib/utils';
+import { isVirtualEventId } from '@/social/socialEvents';
 
 export interface MonthCellData {
   day: Date;
@@ -112,6 +113,7 @@ export const MonthDayCell = memo(function MonthDayCell({
                 key={dragId(occ.eventId, occ.start.getTime())}
                 draggableId={dragId(occ.eventId, occ.start.getTime())}
                 index={i}
+                isDragDisabled={isVirtualEventId(occ.eventId)}
               >
                 {(drag, snap) => (
                   <div

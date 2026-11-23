@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useAllEvents } from '@/social/socialEvents';
+import { openVirtualEvent } from '@/social/openVirtualEvent';
 import { addDays, startOfDay, isToday, isBefore } from 'date-fns';
 import { CalendarDays, Plus } from 'lucide-react';
 import { useCalendarStore } from '@/store/calendarStore';
@@ -13,7 +15,7 @@ const LOAD_MORE_DAYS = 30;
 const VIRTUALIZE_THRESHOLD = 40;
 
 export function AgendaView() {
-  const events = useCalendarStore((s) => s.events);
+  const events = useAllEvents();
   const calendars = useCalendarStore((s) => s.calendars);
   const openEventModal = useCalendarStore((s) => s.openEventModal);
   const setCurrentDate = useCalendarStore((s) => s.setCurrentDate);
@@ -82,6 +84,7 @@ export function AgendaView() {
 
   const handleEventClick = useCallback(
     (eventId: string, day: Date) => {
+      if (openVirtualEvent(eventId)) return;
       setCurrentDate(day);
       openEventModal(eventId, day);
     },

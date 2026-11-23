@@ -18,6 +18,11 @@ import { useDeepLinks } from '@/hooks/useDeepLinks';
 import { AuthModal } from '@/components/Auth';
 import { WeatherAiModal } from '@/components/WeatherAi/WeatherAiModal';
 import { MemoryDialog } from '@/components/Memories/MemoryDialog';
+import { useSocialSync } from '@/hooks/useSocialSync';
+
+const SharedNoteDialog = lazy(() =>
+  import('@/components/Friends/SharedNoteDialog').then((m) => ({ default: m.SharedNoteDialog }))
+);
 import { useMemoryStore, memoriesOnThisDay } from '@/store/memoryStore';
 import { toastInfo } from '@/store/toastStore';
 
@@ -32,6 +37,7 @@ function App() {
   useNativeReminders();
   useCapacitorInit();
   useDeepLinks();
+  useSocialSync();
 
   const openEventModal = useCalendarStore((s) => s.openEventModal);
 
@@ -92,6 +98,9 @@ function App() {
         <AuthModal />
         <WeatherAiModal />
         <MemoryDialog />
+        <Suspense fallback={null}>
+          <SharedNoteDialog />
+        </Suspense>
         <Toaster />
         <Button
           size="icon"

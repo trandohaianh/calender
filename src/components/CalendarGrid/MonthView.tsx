@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useAllEvents } from '@/social/socialEvents';
 import {
   startOfMonth,
   endOfMonth,
@@ -23,7 +24,7 @@ function parseDragId(id: string) {
 
 export function MonthView({ onEventClick, onDayClick, onEventMove }: MonthViewProps) {
   const currentDate = useCalendarStore((s) => s.currentDate);
-  const events = useCalendarStore((s) => s.events);
+  const events = useAllEvents();
   const calendars = useCalendarStore((s) => s.calendars);
 
   const { cells, rowCount } = useMemo(() => {

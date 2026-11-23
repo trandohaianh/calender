@@ -16,6 +16,7 @@ interface CalendarState {
   sidebarOpen: boolean;
   showLunar: boolean;
   showHolidays: boolean;
+  showSocial: boolean;
 
   setEvents: (events: CalendarEvent[]) => void;
   setCalendars: (calendars: Calendar[]) => void;
@@ -33,6 +34,7 @@ interface CalendarState {
   toggleSidebar: () => void;
   setShowLunar: (v: boolean) => void;
   setShowHolidays: (v: boolean) => void;
+  setShowSocial: (v: boolean) => void;
 }
 
 export const useCalendarStore = create<CalendarState>()(
@@ -51,6 +53,7 @@ export const useCalendarStore = create<CalendarState>()(
       sidebarOpen: false,
       showLunar: true,
       showHolidays: true,
+      showSocial: true,
 
       setEvents: (events) => set({ events }),
       setCalendars: (calendars) => set({ calendars }),
@@ -106,6 +109,7 @@ export const useCalendarStore = create<CalendarState>()(
       toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),
       setShowLunar: (v) => set({ showLunar: v }),
       setShowHolidays: (v) => set({ showHolidays: v }),
+      setShowSocial: (v) => set({ showSocial: v }),
     }),
     {
       name: 'mycalendar-ui',
@@ -114,6 +118,7 @@ export const useCalendarStore = create<CalendarState>()(
         isDarkMode: s.isDarkMode,
         showLunar: s.showLunar,
         showHolidays: s.showHolidays,
+        showSocial: s.showSocial,
       }),
       onRehydrateStorage: () => (state) => {
         if (state?.isDarkMode) {

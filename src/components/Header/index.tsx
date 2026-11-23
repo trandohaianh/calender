@@ -21,6 +21,7 @@ const VIEWS: { id: ViewMode; label: string }[] = [
   { id: 'day', label: 'Ngày' },
   { id: 'agenda', label: 'Agenda' },
   { id: 'memories', label: '📸 Kỷ niệm' },
+  { id: 'friends', label: '💞 Bạn thân' },
 ];
 
 export function Header() {
@@ -46,6 +47,9 @@ export function Header() {
     }
     if (currentView === 'memories') {
       return 'Kỷ niệm';
+    }
+    if (currentView === 'friends') {
+      return 'Bạn thân';
     }
     if (currentView === 'month') {
       return formatVi(currentDate, 'MMMM yyyy');

@@ -5,6 +5,7 @@ import { formatDateInput } from '@/lib/eventAdapters';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { CalendarViewSkeleton } from './CalendarViewSkeleton';
 import { useCalendarKeyboard } from '@/hooks/useCalendarKeyboard';
+import { openVirtualEvent } from '@/social/openVirtualEvent';
 
 const MonthView = lazy(() =>
   import('./MonthView').then((m) => ({ default: m.MonthView }))
@@ -20,6 +21,9 @@ const YearView = lazy(() =>
 );
 const MemoriesView = lazy(() =>
   import('@/components/Memories/MemoriesView').then((m) => ({ default: m.MemoriesView }))
+);
+const FriendsView = lazy(() =>
+  import('@/components/Friends/FriendsView').then((m) => ({ default: m.FriendsView }))
 );
 const AgendaView = lazy(() =>
   import('@/components/AgendaView').then((m) => ({ default: m.AgendaView }))
@@ -61,12 +65,17 @@ export function CalendarGrid() {
   );
 
   const onEventClick = useCallback(
-    (id: string, occurrenceStart?: Date) => openEventModal(id, occurrenceStart ?? null),
+    (id: string, occurrenceStart?: Date) => {
+      if (openVirtualEvent(id)) return;
+      openEventModal(id, occurrenceStart ?? null);
+    },
     [openEventModal]
   );
 
   const viewLabel =
-    currentView === 'memories'
+    currentView === 'friends'
+      ? 'Bạn thân'
+      : currentView === 'memories'
       ? 'Kỷ niệm'
       : currentView === 'year'
       ? 'Năm'
@@ -89,6 +98,7 @@ export function CalendarGrid() {
         <Suspense fallback={<CalendarViewSkeleton />}>
           {currentView === 'year' && <YearView />}
           {currentView === 'memories' && <MemoriesView />}
+          {currentView === 'friends' && <FriendsView />}
           {currentView === 'agenda' && <AgendaView />}
           {currentView === 'week' && (
             <WeekView onEventClick={onEventClick} onSlotClick={handleSlotClick} />

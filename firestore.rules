@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Chỉ user đã auth mới truy cập được node của chính họ
+    // ───────────── Dữ liệu lịch riêng: chỉ chủ tài khoản ─────────────
     match /users/{userId} {
       allow read, write: if isOwner(userId);
 
@@ -21,8 +21,155 @@ service cloud.firestore {
       }
     }
 
+    // ───────────── Bạn thân ─────────────
+    // Hồ sơ: chỉ chính mình và người có trong danh sách bạn của mình đọc được.
+    match /profiles/{uid} {
+      allow read: if isOwner(uid) || isFriendOf(uid);
+      allow create, update: if isOwner(uid) && validProfile();
+      allow delete: if isOwner(uid);
+
+      // Danh sách bạn của {uid}: chỉ chủ đọc. Ghi khi chấp nhận lời mời.
+      match /friends/{friendUid} {
+        allow read: if isOwner(uid);
+
+        // Người nhận lời mời (to) ghi cả 2 phía, lời mời phải tồn tại
+        allow create: if signedIn() && validFriendLink() && (
+          // ghi vào danh sách của mình: lời mời friendUid → mình
+          (isOwner(uid) && requestMatches(friendUid, uid))
+          // ghi vào danh sách người gửi: lời mời uid → mình
+          || (request.auth.uid == friendUid && requestMatches(uid, friendUid))
+        );
+
+        // Chỉ được đổi ngày "since" (vd ngày bắt đầu yêu)
+        allow update: if (isOwner(uid) || request.auth.uid == friendUid)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['since'])
+          && request.resource.data.since is string
+          && request.resource.data.since.size() == 10;
+
+        // Huỷ kết bạn: ai trong 2 người cũng xoá được
+        allow delete: if isOwner(uid) || request.auth.uid == friendUid;
+      }
+    }
+
+    // Mã mời: chỉ đọc đúng 1 mã (không liệt kê được), chủ tạo/xoá
+    match /inviteCodes/{code} {
+      allow get: if signedIn();
+      allow list: if false;
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && code.size() >= 6 && code.size() <= 12;
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+      allow update: if false;
+    }
+
+    // Lời mời kết bạn: id = "{from}_{to}"
+    match /friendRequests/{reqId} {
+      allow read: if signedIn()
+        && (resource.data.from == request.auth.uid || resource.data.to == request.auth.uid);
+      allow create: if signedIn()
+        && reqId == request.auth.uid + '_' + request.resource.data.to
+        && request.resource.data.from == request.auth.uid
+        && request.resource.data.to != request.auth.uid
+        && request.resource.data.type in ['friend', 'couple']
+        && request.resource.data.fromName is string
+        && request.resource.data.fromName.size() <= 40
+        && request.resource.data.fromAvatar is string
+        && request.resource.data.fromAvatar.size() <= 16
+        && !exists(/databases/$(database)/documents/profiles/$(request.auth.uid)/friends/$(request.resource.data.to));
+      allow delete: if signedIn()
+        && (resource.data.from == request.auth.uid || resource.data.to == request.auth.uid);
+      allow update: if false;
+    }
+
+    // ───────────── Kỷ niệm chung: đúng 2 người, chỉ 2 người đó thấy ─────────────
+    match /sharedMemories/{memId} {
+      allow read: if signedIn() && request.auth.uid in resource.data.members;
+      allow create: if signedIn() && validSharedCreate();
+      allow update: if signedIn()
+        && request.auth.uid in resource.data.members
+        && request.resource.data.members == resource.data.members
+        && request.resource.data.createdBy == resource.data.createdBy
+        && validSharedFields();
+      allow delete: if signedIn() && request.auth.uid in resource.data.members;
+
+      match /photos/{photoId} {
+        allow read, delete: if signedIn() && isMemberOf(memId);
+        allow create: if signedIn() && isMemberOf(memId)
+          && request.resource.data.by == request.auth.uid
+          && request.resource.data.data is string
+          && request.resource.data.data.size() < 400000
+          && request.resource.data.data.matches('data:image/jpeg;base64,.*')
+          && get(/databases/$(database)/documents/sharedMemories/$(memId)).data.photoCount < 6;
+        allow update: if false;
+      }
+    }
+
+    // ───────────── Hàm dùng chung ─────────────
+    function signedIn() {
+      return request.auth != null;
+    }
+
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
+    }
+
+    // Người đang đăng nhập có trong danh sách bạn của {uid}
+    function isFriendOf(uid) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/profiles/$(uid)/friends/$(request.auth.uid));
+    }
+
+    // Có lời mời from → to (người đang đăng nhập phải là "to") và loại khớp
+    function requestMatches(fromUid, toUid) {
+      let path = /databases/$(database)/documents/friendRequests/$(fromUid + '_' + toUid);
+      return request.auth.uid == toUid
+        && exists(path)
+        && get(path).data.type == request.resource.data.relation;
+    }
+
+    function validFriendLink() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['relation', 'since'])
+        && d.relation in ['friend', 'couple']
+        && d.since is string && d.since.size() == 10;
+    }
+
+    function validProfile() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['displayName', 'avatar', 'color', 'birthday', 'birthYear', 'birthdayLunar', 'bio', 'inviteCode', 'updatedAt'])
+        && d.displayName is string && d.displayName.size() > 0 && d.displayName.size() <= 40
+        && d.avatar is string && d.avatar.size() <= 16
+        && d.color is string && d.color.size() <= 16
+        && (!('birthday' in d) || (d.birthday is string && d.birthday.matches('[0-1][0-9]-[0-3][0-9]')))
+        && (!('birthYear' in d) || (d.birthYear is int && d.birthYear > 1900 && d.birthYear < 2100))
+        && (!('birthdayLunar' in d) || d.birthdayLunar is bool)
+        && (!('bio' in d) || (d.bio is string && d.bio.size() <= 160));
+    }
+
+    function isMemberOf(memId) {
+      return request.auth.uid in get(/databases/$(database)/documents/sharedMemories/$(memId)).data.members;
+    }
+
+    function validSharedFields() {
+      let d = request.resource.data;
+      return d.title is string && d.title.size() <= 80
+        && d.note is string && d.note.size() <= 5000
+        && d.date is string && d.date.size() == 10
+        && d.theme is string && d.theme.size() <= 20
+        && d.stickers is map && d.stickers.size() <= 60
+        && d.photoCount is int && d.photoCount >= 0 && d.photoCount <= 6;
+    }
+
+    // Tạo kỷ niệm chung: mình + 1 người có trong danh sách bạn của mình
+    function validSharedCreate() {
+      let d = request.resource.data;
+      let m = d.members;
+      return m is list && m.size() == 2
+        && m[0] == request.auth.uid && m[1] != request.auth.uid
+        && d.createdBy == request.auth.uid
+        && exists(/databases/$(database)/documents/profiles/$(request.auth.uid)/friends/$(m[1]))
+        && d.photoCount == 0
+        && validSharedFields();
     }
 
     function validEvent() {

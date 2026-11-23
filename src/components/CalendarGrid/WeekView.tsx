@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useAllEvents } from '@/social/socialEvents';
 import {
   format,
   startOfWeek,
@@ -25,7 +26,7 @@ interface WeekViewProps {
 
 export function WeekView({ onEventClick, onSlotClick }: WeekViewProps) {
   const currentDate = useCalendarStore((s) => s.currentDate);
-  const events = useCalendarStore((s) => s.events);
+  const events = useAllEvents();
   const calendars = useCalendarStore((s) => s.calendars);
   const scrollRef = useRef<HTMLDivElement>(null);
 

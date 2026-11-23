@@ -49,6 +49,8 @@ const config: Config = {
       fontFamily: {
         sans: ['system-ui', 'Segoe UI', 'Roboto', 'sans-serif'],
         mono: ['ui-monospace', 'Consolas', 'monospace'],
+        fun: ['"Baloo 2"', 'system-ui', 'sans-serif'],
+        hand: ['"Patrick Hand"', '"Comic Sans MS"', 'cursive'],
       },
       keyframes: {
         'fade-in': {
@@ -59,10 +61,28 @@ const config: Config = {
           from: { transform: 'translateY(12px)', opacity: '0' },
           to: { transform: 'translateY(0)', opacity: '1' },
         },
+        heartbeat: {
+          '0%, 100%': { transform: 'scale(1)' },
+          '15%': { transform: 'scale(1.25)' },
+          '30%': { transform: 'scale(1)' },
+          '45%': { transform: 'scale(1.15)' },
+        },
+        floaty: {
+          '0%, 100%': { transform: 'translateY(0) rotate(-3deg)' },
+          '50%': { transform: 'translateY(-6px) rotate(3deg)' },
+        },
+        'pop-in': {
+          '0%': { transform: 'scale(0.6)', opacity: '0' },
+          '70%': { transform: 'scale(1.08)', opacity: '1' },
+          '100%': { transform: 'scale(1)' },
+        },
       },
       animation: {
         'fade-in': 'fade-in 0.2s ease-out',
         'slide-in': 'slide-in 0.3s ease-out',
+        heartbeat: 'heartbeat 1.6s ease-in-out infinite',
+        floaty: 'floaty 3.5s ease-in-out infinite',
+        'pop-in': 'pop-in 0.35s cubic-bezier(.2,.9,.3,1.3)',
       },
     },
   },

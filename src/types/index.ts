@@ -1,6 +1,6 @@
 import type { Timestamp } from 'firebase/firestore';
 
-export type ViewMode = 'year' | 'month' | 'week' | 'day' | 'agenda' | 'memories';
+export type ViewMode = 'year' | 'month' | 'week' | 'day' | 'agenda' | 'memories' | 'friends';
 
 export type RecurrenceType =
   | 'daily'

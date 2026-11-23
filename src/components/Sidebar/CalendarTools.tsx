@@ -14,6 +14,8 @@ export function CalendarTools() {
   const showHolidays = useCalendarStore((s) => s.showHolidays);
   const setShowLunar = useCalendarStore((s) => s.setShowLunar);
   const setShowHolidays = useCalendarStore((s) => s.setShowHolidays);
+  const showSocial = useCalendarStore((s) => s.showSocial);
+  const setShowSocial = useCalendarStore((s) => s.setShowSocial);
   const calendars = useCalendarStore((s) => s.calendars);
   const { events, importEvents } = useEvents();
 
@@ -81,6 +83,12 @@ export function CalendarTools() {
             Ngày lễ Việt Nam
           </Label>
           <Switch id="tool-holidays" checked={showHolidays} onCheckedChange={setShowHolidays} />
+        </div>
+        <div className="flex items-center justify-between">
+          <Label htmlFor="tool-social" className="cursor-pointer text-xs font-medium">
+            Sinh nhật bạn thân
+          </Label>
+          <Switch id="tool-social" checked={showSocial} onCheckedChange={setShowSocial} />
         </div>
 
         <div className="pt-1">

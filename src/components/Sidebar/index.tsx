@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useAllEvents } from '@/social/socialEvents';
 import {
   format,
   startOfMonth,
@@ -43,7 +44,7 @@ const CAL_COLORS = ['#1a73e8', '#34a853', '#f9ab00', '#ea4335', '#9334e6', '#e67
 
 function SidebarContent({ collapsed }: { collapsed?: boolean }) {
   const currentDate = useCalendarStore((s) => s.currentDate);
-  const events = useCalendarStore((s) => s.events);
+  const events = useAllEvents();
   const calendars = useCalendarStore((s) => s.calendars);
   const setCurrentDate = useCalendarStore((s) => s.setCurrentDate);
   const openEventModal = useCalendarStore((s) => s.openEventModal);
