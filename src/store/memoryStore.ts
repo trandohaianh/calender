@@ -25,7 +25,7 @@ interface MemoryState {
   /** Đọc lại toàn bộ từ IndexedDB (sau khi khôi phục) */
   reload: () => Promise<void>;
   /** Tạo hoặc cập nhật (gộp các trường) */
-  upsert: (target: MemoryTarget, patch: Partial<Pick<Memory, 'note' | 'mood' | 'title'>>) => Promise<Memory>;
+  upsert: (target: MemoryTarget, patch: Partial<Pick<Memory, 'note' | 'mood' | 'title' | 'stickers' | 'font' | 'paper'>>) => Promise<Memory>;
   addPhotos: (target: MemoryTarget, files: File[]) => Promise<number>;
   removePhoto: (memoryId: string, photoId: string) => Promise<void>;
   remove: (memoryId: string) => Promise<void>;
@@ -34,7 +34,7 @@ interface MemoryState {
 }
 
 function isEmpty(m: Memory) {
-  return !m.note.trim() && !m.mood && m.photoIds.length === 0;
+  return !m.note.trim() && !m.mood && m.photoIds.length === 0 && !m.stickers?.length;
 }
 
 function blank(target: MemoryTarget): Memory {

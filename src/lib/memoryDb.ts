@@ -13,9 +13,26 @@ export interface Memory {
   color: string;
   note: string;
   mood?: string;
+  /** Sticker dán lên trang kỷ niệm (toạ độ % trong trang) */
+  stickers?: MemorySticker[];
+  /** Kiểu chữ của note (xem NOTE_FONTS) */
+  font?: string;
+  /** Giấy nền (xem NOTE_THEMES) */
+  paper?: string;
   photoIds: string[];
   createdAt: number;
   updatedAt: number;
+}
+
+export interface MemorySticker {
+  id: string;
+  /** Emoji, hoặc chữ nếu kind = 'text' */
+  emoji: string;
+  kind?: 'text';
+  x: number;
+  y: number;
+  rot: number;
+  scale: number;
 }
 
 export interface MemoryPhoto {

@@ -8,6 +8,9 @@ import { formatVi } from '@/lib/i18n';
 import type { Memory } from '@/lib/memoryDb';
 import { PhotoThumb } from './PhotoThumb';
 import { BackupPanel } from './BackupPanel';
+import { StickerFace } from './MemoryPanel';
+import { noteFont, paperOf } from './memoryStyles';
+import { cn } from '@/lib/utils';
 
 function parseDate(s: string) {
   const [y, m, d] = s.split('-').map(Number);
@@ -16,46 +19,63 @@ function parseDate(s: string) {
 
 function MemoryCard({ m, onOpen, yearsAgo }: { m: Memory; onOpen: () => void; yearsAgo?: number }) {
   const cover = m.photoIds[0];
+  const paper = paperOf(m.paper);
+  const font = noteFont(m.font);
+  const stickers = (m.stickers ?? []).slice(0, 4);
   return (
     <button
       type="button"
       onClick={onOpen}
-      className="group flex flex-col overflow-hidden rounded-xl border bg-card text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+      className="clay tilt group relative flex flex-col overflow-hidden rounded-3xl text-left"
     >
-      {cover ? (
-        <div className="relative">
-          <PhotoThumb photoId={cover} className="aspect-[4/3] w-full" />
-          {m.photoIds.length > 1 && (
-            <span className="absolute bottom-1.5 right-1.5 flex items-center gap-1 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-semibold text-white">
-              <Images className="h-3 w-3" /> {m.photoIds.length}
-            </span>
-          )}
-          {yearsAgo !== undefined && (
-            <span className="absolute left-1.5 top-1.5 rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-bold text-white shadow">
-              {yearsAgo} năm trước
-            </span>
-          )}
-        </div>
-      ) : (
-        <div
-          className="flex aspect-[4/3] w-full items-center justify-center text-4xl"
-          style={{ background: `${m.color}22` }}
-        >
-          {m.mood ?? '📝'}
-        </div>
-      )}
-      <div className="flex flex-1 flex-col gap-0.5 p-2.5">
-        <div className="flex items-center gap-1.5">
-          <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: m.color }} />
-          <span className="truncate text-sm font-semibold">{m.title}</span>
-          {m.mood && cover && <span className="ml-auto">{m.mood}</span>}
-        </div>
-        <span className="text-[11px] text-muted-foreground">
-          {formatVi(parseDate(m.date), 'EEEEEE, dd/MM/yyyy')}
-        </span>
-        {m.note.trim() && (
-          <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">{m.note}</p>
+      <div
+        className="relative flex min-h-[150px] flex-col gap-2 overflow-hidden p-3"
+        style={{ background: paper.bg, color: paper.ink }}
+      >
+        {cover && (
+          <div className="w-[62%] -rotate-3 self-start bg-white p-1 pb-3 shadow-md transition-transform group-hover:rotate-0">
+            <PhotoThumb photoId={cover} className="aspect-square w-full" />
+          </div>
         )}
+        {m.note.trim() ? (
+          <p className={cn('line-clamp-3 !text-lg !leading-6', m.mood && 'pr-8', font.className)}>{m.note}</p>
+        ) : (
+          !cover && <span className="m-auto text-5xl">{m.mood ?? '📝'}</span>
+        )}
+        {m.mood && (cover || m.note.trim()) && (
+          <span className="absolute right-2 top-2 rotate-12 text-3xl drop-shadow">{m.mood}</span>
+        )}
+        {stickers.map((st) => (
+          <span
+            key={st.id}
+            aria-hidden
+            className="pointer-events-none absolute"
+            style={{
+              left: `${st.x}%`,
+              top: `${st.y}%`,
+              transform: `translate(-50%,-50%) rotate(${st.rot}deg) scale(${Math.min(st.scale, 1.4) * 0.7})`,
+            }}
+          >
+            <StickerFace s={st} />
+          </span>
+        ))}
+        {m.photoIds.length > 1 && (
+          <span className="absolute bottom-1.5 right-1.5 flex items-center gap-1 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-semibold text-white">
+            <Images className="h-3 w-3" /> {m.photoIds.length}
+          </span>
+        )}
+        {yearsAgo !== undefined && (
+          <span className="absolute left-1.5 top-1.5 rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-bold text-white shadow">
+            {yearsAgo} năm trước
+          </span>
+        )}
+      </div>
+      <div className="flex items-center gap-1.5 px-3 py-2">
+        <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: m.color }} />
+        <span className="truncate text-xs font-bold">{m.title}</span>
+        <span className="ml-auto shrink-0 text-[10px] text-muted-foreground">
+          {formatVi(parseDate(m.date), 'dd/MM/yy')}
+        </span>
       </div>
     </button>
   );

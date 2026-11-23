@@ -32,6 +32,10 @@ const config: Config = {
           DEFAULT: 'hsl(var(--accent))',
           foreground: 'hsl(var(--accent-foreground))',
         },
+        popover: {
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))',
+        },
         card: {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
@@ -51,6 +55,10 @@ const config: Config = {
         mono: ['ui-monospace', 'Consolas', 'monospace'],
         fun: ['"Baloo 2"', 'system-ui', 'sans-serif'],
         hand: ['"Patrick Hand"', '"Comic Sans MS"', 'cursive'],
+        cookie: ['Pacifico', 'cursive'],
+        script: ['"Dancing Script"', 'cursive'],
+        mali: ['Mali', 'cursive'],
+        sign: ['Bungee', 'system-ui', 'sans-serif'],
       },
       keyframes: {
         'fade-in': {

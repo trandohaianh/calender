@@ -65,7 +65,7 @@ export const MonthDayCell = memo(function MonthDayCell({
             }
           }}
           className={cn(
-            'clay-sm group relative flex min-h-[96px] flex-col overflow-hidden rounded-2xl p-1.5',
+            'clay-sm group relative flex min-h-[96px] flex-col overflow-hidden rounded-2xl p-1.5 max-sm:rounded-xl max-sm:p-1',
             'cursor-pointer transition-all duration-200',
             'hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ring',
             !inMonth && 'opacity-55 saturate-50',
@@ -73,10 +73,10 @@ export const MonthDayCell = memo(function MonthDayCell({
             snapshot.isDraggingOver && 'ring-2 ring-violet-400 bg-violet-50 dark:bg-violet-500/15'
           )}
         >
-          <div className="mb-1 flex items-start justify-between">
+          <div className="mb-1 flex items-start justify-between max-sm:flex-col max-sm:items-center max-sm:gap-0.5">
             <span
               className={cn(
-                'inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-xl font-fun text-sm font-bold transition-all',
+                'inline-flex h-7 w-7 max-sm:h-6 max-sm:w-6 max-sm:text-xs shrink-0 items-center justify-center rounded-xl font-fun text-sm font-bold transition-all',
                 today
                   ? 'candy-btn animate-pop-in !shadow-[0_3px_0_rgb(190_24_120)]'
                   : 'text-foreground group-hover:bg-muted'
@@ -98,8 +98,8 @@ export const MonthDayCell = memo(function MonthDayCell({
                 📸{dayMemories.length > 1 ? dayMemories.length : ''}
               </button>
             )}
-            <div className="flex min-w-0 flex-1 items-start justify-end gap-1 overflow-hidden">
-              <LunarBadge date={day} variant="cell" />
+            <div className="flex min-w-0 flex-1 items-start justify-end gap-1 overflow-hidden max-sm:w-full max-sm:justify-center">
+              <LunarBadge date={day} variant="cell" className="max-sm:items-center" />
               <div className="hidden xl:block">
                 <DayWeatherBadge date={day} compact />
               </div>
@@ -120,7 +120,7 @@ export const MonthDayCell = memo(function MonthDayCell({
                     {...drag.draggableProps}
                     {...drag.dragHandleProps}
                     className={cn(
-                      'truncate rounded-lg px-1.5 py-[3px] text-[0.68rem] font-bold leading-tight text-foreground',
+                      'truncate rounded-lg px-1.5 py-[3px] text-[0.68rem] font-bold leading-tight text-foreground max-sm:text-clip max-sm:px-1 max-sm:text-[0.62rem]',
                       'cursor-grab active:cursor-grabbing',
                       'transition-transform duration-150 hover:z-10 hover:-translate-y-px hover:scale-[1.03]',
                       snap.isDragging && 'dragging z-50 shadow-lg opacity-95',
@@ -137,7 +137,7 @@ export const MonthDayCell = memo(function MonthDayCell({
                     }}
                   >
                     {!occ.allDay && (
-                      <span className="font-mono opacity-80">
+                      <span className="font-mono opacity-80 max-sm:hidden">
                         {format(occ.start, 'HH:mm')}{' '}
                       </span>
                     )}

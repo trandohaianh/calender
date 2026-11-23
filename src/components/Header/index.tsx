@@ -65,6 +65,25 @@ export function Header() {
     return 'Sự kiện sắp tới';
   }, [currentDate, currentView]);
 
+  /** Tiêu đề gọn cho thanh điện thoại (không bị cắt chữ) */
+  const shortTitle = useMemo(() => {
+    if (currentView === 'week') {
+      const ws = startOfWeek(currentDate, { weekStartsOn: WEEK_STARTS_ON });
+      const we = endOfWeek(currentDate, { weekStartsOn: WEEK_STARTS_ON });
+      return ws.getMonth() === we.getMonth()
+        ? `${formatVi(ws, 'd')}–${formatVi(we, 'd/M')}`
+        : `${formatVi(ws, 'd/M')}–${formatVi(we, 'd/M')}`;
+    }
+    if (currentView === 'day') {
+      const wd = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'][currentDate.getDay()];
+      return `${wd} ${formatVi(currentDate, 'd/M')}`;
+    }
+    if (currentView === 'year') return String(currentDate.getFullYear());
+    if (currentView === 'month') return formatVi(currentDate, "'T'M/yyyy");
+    if (currentView === 'agenda') return 'Sắp tới';
+    return periodTitle;
+  }, [currentDate, currentView, periodTitle]);
+
   const handleViewChange = (view: ViewMode) => setCurrentView(view);
 
   const searchResults = useMemo(() => {
@@ -246,16 +265,18 @@ export function Header() {
           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate(-1)}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <Button variant="outline" size="sm" className="h-8 text-xs font-medium" onClick={goToday}>
+          <Button variant="outline" size="sm" className="h-8 px-2.5 text-xs font-bold" onClick={goToday}>
             Hôm nay
           </Button>
           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate(1)}>
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
-        <span className="candy-text truncate font-fun text-sm font-extrabold capitalize">{periodTitle}</span>
+        <span className="candy-text min-w-0 truncate font-fun text-base font-extrabold" title={periodTitle}>
+          {shortTitle}
+        </span>
         <select
-          className="rounded-md border bg-background px-2 py-1 text-xs font-medium"
+          className="clay-sm w-[6.75rem] shrink-0 rounded-full border-0 px-2 py-1.5 text-xs font-bold"
           value={currentView}
           onChange={(e) => handleViewChange(e.target.value as ViewMode)}
           aria-label="Chế độ xem lịch"
